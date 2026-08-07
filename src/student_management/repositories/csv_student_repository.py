@@ -58,16 +58,17 @@ class CSVStudentRepository(StudentRepository):
             reader = csv.DictReader(file)
             return [self._row_to_student(row) for row in reader]
 
-    def update(self, student: Student) -> None:
-        """Update an existing student."""
+    def update(self, student: Student) -> bool:
+        """Update an existing student and return whether the update occurred."""
         students = self.get_all()
 
         for index, existing_student in enumerate(students):
             if existing_student.student_id == student.student_id:
                 students[index] = student
-                break
+                self._write_all(students)
+                return True
 
-        self._write_all(students)
+        return False
 
     def delete(self, student_id: str) -> bool:
         """Delete a student and return whether deletion occurred."""

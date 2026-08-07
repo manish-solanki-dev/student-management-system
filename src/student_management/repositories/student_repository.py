@@ -22,8 +22,8 @@ class StudentRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def update(self, student: Student) -> None:
-        """Update an existing student."""
+    def update(self, student: Student) -> bool:
+        """Update an existing student and return whether the update occurred."""
         raise NotImplementedError
 
     @abstractmethod

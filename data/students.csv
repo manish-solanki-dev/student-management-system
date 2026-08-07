@@ -1,2 +1,2 @@
 student_id,first_name,last_name,email,phone,age,course,gpa,created_at
-STU001,Rahul,Patel,[rahul@example.com](mailto:rahul@example.com),9876543210,21,Computer Science,8.4,2026-08-07T22:48:06.249672
+STU001,Rahul,Patel,[rahul@example.com](mailto:rahul@example.com),9876543210,21,Computer Science,9.1,2026-08-07T22:48:06.249672
