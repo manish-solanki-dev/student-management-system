@@ -40,3 +40,10 @@ class StudentService:
             raise StudentNotFoundError(f"Student not found: {student.student_id}")
 
         return student
+
+    def delete_student(self, student_id: str) -> None:
+        """Delete an existing student."""
+        deleted = self._repository.delete(student_id)
+
+        if not deleted:
+            raise StudentNotFoundError(f"Student not found: {student_id}")
