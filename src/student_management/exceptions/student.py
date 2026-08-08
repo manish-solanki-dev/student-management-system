@@ -7,3 +7,7 @@ class StudentNotFoundError(StudentManagementError):
 
 class DuplicateStudentError(StudentManagementError):
     """Raised when a student ID already exists."""
+
+
+class InvalidSortFieldError(StudentManagementError):
+    """Raised when an unsupported student sort field is requested."""

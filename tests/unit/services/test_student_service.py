@@ -5,6 +5,7 @@ import pytest
 from student_management.domain.models.student import Student
 from student_management.exceptions.student import (
     DuplicateStudentError,
+    InvalidSortFieldError,
     StudentNotFoundError,
 )
 from student_management.exceptions.validation import InvalidEmailError
@@ -239,7 +240,8 @@ def test_search_students_by_id() -> None:
     result = service.search_students("STU001", "id")
 
     assert result == [student]
-    
+
+
 def test_search_students_by_name() -> None:
     repository = FakeStudentRepository()
     service = create_student_service(repository)
@@ -250,6 +252,7 @@ def test_search_students_by_name() -> None:
     result = service.search_students("Manish", "name")
 
     assert result == [student]
+
 
 def test_search_students_by_email() -> None:
     repository = FakeStudentRepository()
@@ -265,6 +268,7 @@ def test_search_students_by_email() -> None:
 
     assert result == [student]
 
+
 def test_search_students_by_course() -> None:
     repository = FakeStudentRepository()
     service = create_student_service(repository)
@@ -275,7 +279,7 @@ def test_search_students_by_course() -> None:
     result = service.search_students("Python", "course")
 
     assert result == [student]
-    
+
 
 def test_search_students_returns_empty_list_when_no_match() -> None:
     repository = FakeStudentRepository()
@@ -284,3 +288,153 @@ def test_search_students_returns_empty_list_when_no_match() -> None:
     result = service.search_students("Java", "course")
 
     assert result == []
+
+
+def test_sort_students_by_gpa() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    first_student = create_valid_student()
+    first_student.student_id = "STU001"
+    first_student.gpa = 8.5
+
+    second_student = create_valid_student()
+    second_student.student_id = "STU002"
+    second_student.gpa = 9.5
+
+    third_student = create_valid_student()
+    third_student.student_id = "STU003"
+    third_student.gpa = 7.0
+
+    repository.save(first_student)
+    repository.save(second_student)
+    repository.save(third_student)
+
+    result = service.sort_students("gpa")
+
+    assert [student.gpa for student in result] == [7.0, 8.5, 9.5]
+
+
+def test_sort_students_by_gpa_descending() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    first_student = create_valid_student()
+    first_student.student_id = "STU001"
+    first_student.gpa = 8.5
+
+    second_student = create_valid_student()
+    second_student.student_id = "STU002"
+    second_student.gpa = 9.5
+
+    third_student = create_valid_student()
+    third_student.student_id = "STU003"
+    third_student.gpa = 7.0
+
+    repository.save(first_student)
+    repository.save(second_student)
+    repository.save(third_student)
+
+    result = service.sort_students("gpa", descending=True)
+
+    assert [student.gpa for student in result] == [9.5, 8.5, 7.0]
+
+
+def test_sort_students_by_age() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    first_student = create_valid_student()
+    first_student.student_id = "STU001"
+    first_student.age = 25
+
+    second_student = create_valid_student()
+    second_student.student_id = "STU002"
+    second_student.age = 18
+
+    third_student = create_valid_student()
+    third_student.student_id = "STU003"
+    third_student.age = 21
+
+    repository.save(first_student)
+    repository.save(second_student)
+    repository.save(third_student)
+
+    result = service.sort_students("age")
+
+    assert [student.age for student in result] == [18, 21, 25]
+
+
+def test_sort_students_by_student_id() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    first_student = create_valid_student()
+    first_student.student_id = "STU003"
+
+    second_student = create_valid_student()
+    second_student.student_id = "STU001"
+
+    third_student = create_valid_student()
+    third_student.student_id = "STU002"
+
+    repository.save(first_student)
+    repository.save(second_student)
+    repository.save(third_student)
+
+    result = service.sort_students("student_id")
+
+    assert [student.student_id for student in result] == [
+        "STU001",
+        "STU002",
+        "STU003",
+    ]
+
+
+def test_sort_students_by_name() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    first_student = create_valid_student()
+    first_student.student_id = "STU001"
+    first_student.first_name = "Rahul"
+    first_student.last_name = "Shah"
+
+    second_student = create_valid_student()
+    second_student.student_id = "STU002"
+    second_student.first_name = "Amit"
+    second_student.last_name = "Patel"
+
+    third_student = create_valid_student()
+    third_student.student_id = "STU003"
+    third_student.first_name = "Manish"
+    third_student.last_name = "Solanki"
+
+    repository.save(first_student)
+    repository.save(second_student)
+    repository.save(third_student)
+
+    result = service.sort_students("name")
+
+    assert [student.first_name for student in result] == [
+        "Amit",
+        "Manish",
+        "Rahul",
+    ]
+
+
+def test_sort_students_returns_empty_list_when_no_students_exist() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    result = service.sort_students("gpa")
+
+    assert result == []
+
+
+def test_sort_students_rejects_invalid_field() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    with pytest.raises(InvalidSortFieldError):
+        service.sort_students("salary")

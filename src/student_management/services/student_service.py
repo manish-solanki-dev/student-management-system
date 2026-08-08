@@ -1,6 +1,7 @@
 from student_management.domain.models.student import Student
 from student_management.exceptions.student import (
     DuplicateStudentError,
+    InvalidSortFieldError,
     StudentNotFoundError,
 )
 from student_management.repositories.student_repository import StudentRepository
@@ -61,17 +62,12 @@ class StudentService:
         """Return all students."""
         return self._repository.get_all()
 
-
     def search_students(self, query: str, field: str) -> list[Student]:
         """Search students by the specified field."""
         students = self._repository.get_all()
 
         if field == "id":
-            return [
-                student
-                for student in students
-                if student.student_id == query
-            ]
+            return [student for student in students if student.student_id == query]
 
         if field == "name":
             query = query.lower()
@@ -83,18 +79,39 @@ class StudentService:
 
         if field == "email":
             query = query.lower()
-            return [
-                student
-                for student in students
-                if query in student.email.lower()
-            ]
+            return [student for student in students if query in student.email.lower()]
 
         if field == "course":
             query = query.lower()
-            return [
-                student
-                for student in students
-                if query in student.course.lower()
-            ]
+            return [student for student in students if query in student.course.lower()]
 
         return []
+
+    def sort_students(
+        self,
+        field: str,
+        descending: bool = False,
+    ) -> list[Student]:
+        """Return students sorted by the requested field."""
+        students = self._repository.get_all()
+
+        sort_keys = {
+            "student_id": lambda student: student.student_id,
+            "name": lambda student: (
+                student.first_name.lower(),
+                student.last_name.lower(),
+            ),
+            "gpa": lambda student: student.gpa,
+            "age": lambda student: student.age,
+        }
+
+        key = sort_keys.get(field)
+
+        if key is None:
+            raise InvalidSortFieldError(f"Unsupported sort field: {field}")
+
+        return sorted(
+            students,
+            key=key,
+            reverse=descending,
+        )
