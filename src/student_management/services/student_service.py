@@ -60,3 +60,41 @@ class StudentService:
     def get_all_students(self) -> list[Student]:
         """Return all students."""
         return self._repository.get_all()
+
+
+    def search_students(self, query: str, field: str) -> list[Student]:
+        """Search students by the specified field."""
+        students = self._repository.get_all()
+
+        if field == "id":
+            return [
+                student
+                for student in students
+                if student.student_id == query
+            ]
+
+        if field == "name":
+            query = query.lower()
+            return [
+                student
+                for student in students
+                if query in f"{student.first_name} {student.last_name}".lower()
+            ]
+
+        if field == "email":
+            query = query.lower()
+            return [
+                student
+                for student in students
+                if query in student.email.lower()
+            ]
+
+        if field == "course":
+            query = query.lower()
+            return [
+                student
+                for student in students
+                if query in student.course.lower()
+            ]
+
+        return []

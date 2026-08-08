@@ -227,3 +227,60 @@ def test_get_all_students_returns_empty_list_when_no_students_exist() -> None:
     result = service.get_all_students()
 
     assert result == []
+
+
+def test_search_students_by_id() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    student = create_valid_student()
+    repository.save(student)
+
+    result = service.search_students("STU001", "id")
+
+    assert result == [student]
+    
+def test_search_students_by_name() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    student = create_valid_student()
+    repository.save(student)
+
+    result = service.search_students("Manish", "name")
+
+    assert result == [student]
+
+def test_search_students_by_email() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    student = create_valid_student()
+    repository.save(student)
+
+    result = service.search_students(
+        "manish@example.com",
+        "email",
+    )
+
+    assert result == [student]
+
+def test_search_students_by_course() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    student = create_valid_student()
+    repository.save(student)
+
+    result = service.search_students("Python", "course")
+
+    assert result == [student]
+    
+
+def test_search_students_returns_empty_list_when_no_match() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    result = service.search_students("Java", "course")
+
+    assert result == []
