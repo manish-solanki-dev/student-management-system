@@ -438,3 +438,150 @@ def test_sort_students_rejects_invalid_field() -> None:
 
     with pytest.raises(InvalidSortFieldError):
         service.sort_students("salary")
+
+
+def test_get_all_students_sorts_by_name() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    first_student = create_valid_student()
+    first_student.student_id = "STU001"
+    first_student.first_name = "Rahul"
+
+    second_student = create_valid_student()
+    second_student.student_id = "STU002"
+    second_student.first_name = "Manish"
+
+    repository.save(first_student)
+    repository.save(second_student)
+
+    result = service.get_all_students(sort_by="name")
+
+    assert [student.first_name for student in result] == [
+        "Manish",
+        "Rahul",
+    ]
+
+
+def test_get_all_students_sorts_by_gpa() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    first_student = create_valid_student()
+    first_student.student_id = "STU001"
+    first_student.gpa = 7.5
+
+    second_student = create_valid_student()
+    second_student.student_id = "STU002"
+    second_student.gpa = 9.5
+
+    third_student = create_valid_student()
+    third_student.student_id = "STU003"
+    third_student.gpa = 8.5
+
+    repository.save(first_student)
+    repository.save(second_student)
+    repository.save(third_student)
+
+    result = service.get_all_students(sort_by="gpa")
+
+    assert [student.gpa for student in result] == [
+        7.5,
+        8.5,
+        9.5,
+    ]
+
+
+def test_get_all_students_sorts_by_age() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    first_student = create_valid_student()
+    first_student.student_id = "STU001"
+    first_student.age = 25
+
+    second_student = create_valid_student()
+    second_student.student_id = "STU002"
+    second_student.age = 18
+
+    third_student = create_valid_student()
+    third_student.student_id = "STU003"
+    third_student.age = 21
+
+    repository.save(first_student)
+    repository.save(second_student)
+    repository.save(third_student)
+
+    result = service.get_all_students(sort_by="age")
+
+    assert [student.age for student in result] == [
+        18,
+        21,
+        25,
+    ]
+
+
+def test_get_all_students_sorts_by_student_id() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    first_student = create_valid_student()
+    first_student.student_id = "STU003"
+
+    second_student = create_valid_student()
+    second_student.student_id = "STU001"
+
+    third_student = create_valid_student()
+    third_student.student_id = "STU002"
+
+    repository.save(first_student)
+    repository.save(second_student)
+    repository.save(third_student)
+
+    result = service.get_all_students(sort_by="student_id")
+
+    assert [student.student_id for student in result] == [
+        "STU001",
+        "STU002",
+        "STU003",
+    ]
+
+
+def test_get_all_students_sorts_by_gpa_descending() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    first_student = create_valid_student()
+    first_student.student_id = "STU001"
+    first_student.gpa = 7.5
+
+    second_student = create_valid_student()
+    second_student.student_id = "STU002"
+    second_student.gpa = 9.5
+
+    third_student = create_valid_student()
+    third_student.student_id = "STU003"
+    third_student.gpa = 8.5
+
+    repository.save(first_student)
+    repository.save(second_student)
+    repository.save(third_student)
+
+    result = service.get_all_students(
+        sort_by="gpa",
+        descending=True,
+    )
+
+    assert [student.gpa for student in result] == [
+        9.5,
+        8.5,
+        7.5,
+    ]
+
+
+def test_get_all_students_rejects_invalid_sort_field() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    with pytest.raises(InvalidSortFieldError):
+        service.get_all_students(sort_by="salary")

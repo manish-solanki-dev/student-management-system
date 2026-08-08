@@ -58,9 +58,33 @@ class StudentService:
 
         return student
 
-    def get_all_students(self) -> list[Student]:
-        """Return all students."""
-        return self._repository.get_all()
+    def get_all_students(
+        self,
+        sort_by: str | None = None,
+        descending: bool = False,
+    ) -> list[Student]:
+        """Return all students, optionally sorted."""
+        students = self._repository.get_all()
+
+        sort_keys = {
+            "name": lambda student: student.first_name,
+            "gpa": lambda student: student.gpa,
+            "age": lambda student: student.age,
+            "student_id": lambda student: student.student_id,
+        }
+
+        if sort_by is None:
+            return students
+
+        if sort_by not in sort_keys:
+            raise InvalidSortFieldError(f"Unsupported sort field: {sort_by}")
+
+        students.sort(
+            key=sort_keys[sort_by],
+            reverse=descending,
+        )
+
+        return students
 
     def search_students(self, query: str, field: str) -> list[Student]:
         """Search students by the specified field."""
