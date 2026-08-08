@@ -56,3 +56,7 @@ class StudentService:
             raise StudentNotFoundError(f"Student with ID '{student_id}' was not found.")
 
         return student
+
+    def get_all_students(self) -> list[Student]:
+        """Return all students."""
+        return self._repository.get_all()

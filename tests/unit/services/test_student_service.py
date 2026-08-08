@@ -202,3 +202,28 @@ def test_get_student_rejects_nonexistent_student() -> None:
 
     with pytest.raises(StudentNotFoundError):
         service.get_student("STU001")
+
+
+def test_get_all_students_returns_all_students() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    first_student = create_valid_student()
+    second_student = create_valid_student()
+    second_student.student_id = "STU002"
+
+    repository.save(first_student)
+    repository.save(second_student)
+
+    result = service.get_all_students()
+
+    assert result == [first_student, second_student]
+
+
+def test_get_all_students_returns_empty_list_when_no_students_exist() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    result = service.get_all_students()
+
+    assert result == []
