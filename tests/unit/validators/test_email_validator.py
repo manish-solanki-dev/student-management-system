@@ -29,7 +29,7 @@ def test_accepts_valid_email(email: str) -> None:
         "manish@gmail",
         "manish @gmail.com",
         "manish@example",
-        "[manish..patel@example.com](mailto:manish..patel@example.com)",
+        "manish..patel@example.com",
     ],
 )
 def test_rejects_invalid_email(email: str) -> None:

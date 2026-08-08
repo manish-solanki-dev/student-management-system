@@ -11,6 +11,9 @@ class EmailValidator(Validator[str]):
 
     def validate(self, value: str) -> None:
         """Validate the email address format."""
+        if ".." in value:
+            raise InvalidEmailError("Email cannot contain consecutive dots.")
+
         if not self.PATTERN.fullmatch(value):
             raise InvalidEmailError(
                 "Email must have a valid format, such as name@example.com."
