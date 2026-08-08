@@ -7,6 +7,7 @@ class FakeStudentRepository(StudentRepository):
 
     def __init__(self) -> None:
         self._students: dict[str, Student] = {}
+        self.should_fail_update = False
 
     def save(self, student: Student) -> None:
         """Persist a student in memory."""
@@ -21,7 +22,9 @@ class FakeStudentRepository(StudentRepository):
         return list(self._students.values())
 
     def update(self, student: Student) -> bool:
-        """Update an existing student."""
+        if self.should_fail_update:
+            return False
+
         if student.student_id not in self._students:
             return False
 

@@ -1,5 +1,8 @@
 from student_management.domain.models.student import Student
-from student_management.exceptions.student import DuplicateStudentError
+from student_management.exceptions.student import (
+    DuplicateStudentError,
+    StudentNotFoundError,
+)
 from student_management.repositories.student_repository import StudentRepository
 from student_management.validators.student_validator import StudentValidator
 
@@ -25,4 +28,15 @@ class StudentService:
             )
 
         self._repository.save(student)
+        return student
+
+    def update_student(self, student: Student) -> Student:
+        """Validate and update an existing student."""
+        self._validator.validate(student)
+
+        updated = self._repository.update(student)
+
+        if not updated:
+            raise StudentNotFoundError(f"Student not found: {student.student_id}")
+
         return student

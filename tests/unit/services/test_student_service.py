@@ -3,7 +3,10 @@ from datetime import datetime
 import pytest
 
 from student_management.domain.models.student import Student
-from student_management.exceptions.student import DuplicateStudentError
+from student_management.exceptions.student import (
+    DuplicateStudentError,
+    StudentNotFoundError,
+)
 from student_management.exceptions.validation import InvalidEmailError
 from student_management.services.student_service import StudentService
 from student_management.validators.age_validator import AgeValidator
@@ -100,3 +103,62 @@ def test_add_student_does_not_save_invalid_student() -> None:
         service.add_student(student)
 
     assert repository.get_by_id("STU001") is None
+
+
+def test_update_student_updates_existing_student() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    existing_student = create_valid_student()
+    repository.save(existing_student)
+
+    updated_student = create_valid_student()
+    updated_student.gpa = 9.5
+
+    result = service.update_student(updated_student)
+
+    assert result is updated_student
+
+    saved_student = repository.get_by_id("STU001")
+    assert saved_student is updated_student
+    assert saved_student.gpa == 9.5
+
+
+def test_update_student_rejects_nonexistent_student() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    student = create_valid_student()
+
+    with pytest.raises(StudentNotFoundError):
+        service.update_student(student)
+
+
+def test_update_student_rejects_invalid_student() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    existing_student = create_valid_student()
+    repository.save(existing_student)
+
+    invalid_student = create_valid_student()
+    invalid_student.email = "invalid-email"
+
+    with pytest.raises(InvalidEmailError):
+        service.update_student(invalid_student)
+
+    saved_student = repository.get_by_id("STU001")
+    assert saved_student is existing_student
+
+
+def test_update_student_raises_error_when_repository_update_fails() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    student = create_valid_student()
+    repository.save(student)
+
+    repository.should_fail_update = True
+
+    with pytest.raises(StudentNotFoundError):
+        service.update_student(student)
