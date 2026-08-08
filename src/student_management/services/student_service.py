@@ -47,3 +47,12 @@ class StudentService:
 
         if not deleted:
             raise StudentNotFoundError(f"Student not found: {student_id}")
+
+    def get_student(self, student_id: str) -> Student:
+        """Return a student by ID or raise StudentNotFoundError."""
+        student = self._repository.get_by_id(student_id)
+
+        if student is None:
+            raise StudentNotFoundError(f"Student with ID '{student_id}' was not found.")
+
+        return student

@@ -182,3 +182,23 @@ def test_delete_student_rejects_nonexistent_student() -> None:
 
     with pytest.raises(StudentNotFoundError):
         service.delete_student("STU001")
+
+
+def test_get_student_returns_existing_student() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    student = create_valid_student()
+    repository.save(student)
+
+    result = service.get_student("STU001")
+
+    assert result == student
+
+
+def test_get_student_rejects_nonexistent_student() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    with pytest.raises(StudentNotFoundError):
+        service.get_student("STU001")
