@@ -1,6 +1,7 @@
 from student_management.domain.models.student import Student
 from student_management.exceptions.student import (
     DuplicateStudentError,
+    InvalidSearchFieldError,
     InvalidSortFieldError,
     StudentNotFoundError,
 )
@@ -66,25 +67,14 @@ class StudentService:
         """Return all students, optionally sorted."""
         students = self._repository.get_all()
 
-        sort_keys = {
-            "name": lambda student: student.first_name,
-            "gpa": lambda student: student.gpa,
-            "age": lambda student: student.age,
-            "student_id": lambda student: student.student_id,
-        }
-
         if sort_by is None:
             return students
 
-        if sort_by not in sort_keys:
-            raise InvalidSortFieldError(f"Unsupported sort field: {sort_by}")
-
-        students.sort(
-            key=sort_keys[sort_by],
-            reverse=descending,
+        return self._sort_student_list(
+            students,
+            sort_by,
+            descending,
         )
-
-        return students
 
     def search_students(self, query: str, field: str) -> list[Student]:
         """Search students by the specified field."""
@@ -109,16 +99,42 @@ class StudentService:
             query = query.lower()
             return [student for student in students if query in student.course.lower()]
 
-        return []
+        raise InvalidSearchFieldError(f"Unsupported search field: {field}")
 
     def sort_students(
         self,
         field: str,
         descending: bool = False,
     ) -> list[Student]:
-        """Return students sorted by the requested field."""
+        """Return all students sorted by the requested field."""
         students = self._repository.get_all()
 
+        return self._sort_student_list(
+            students,
+            field,
+            descending,
+        )
+
+    def sort_student_list(
+        self,
+        students: list[Student],
+        field: str,
+        descending: bool = False,
+    ) -> list[Student]:
+        """Sort an existing list of students."""
+        return self._sort_student_list(
+            students,
+            field,
+            descending,
+        )
+
+    @staticmethod
+    def _sort_student_list(
+        students: list[Student],
+        field: str,
+        descending: bool = False,
+    ) -> list[Student]:
+        """Sort a student list by the requested field."""
         sort_keys = {
             "student_id": lambda student: student.student_id,
             "name": lambda student: (

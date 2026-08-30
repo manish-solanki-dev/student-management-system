@@ -11,3 +11,7 @@ class DuplicateStudentError(StudentManagementError):
 
 class InvalidSortFieldError(StudentManagementError):
     """Raised when an unsupported student sort field is requested."""
+
+
+class InvalidSearchFieldError(StudentManagementError):
+    """Raised when an unsupported student search field is requested."""

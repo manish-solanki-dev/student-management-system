@@ -1,2 +1,5 @@
 student_id,first_name,last_name,email,phone,age,course,gpa,created_at
-STU001,Rahul,Patel,rahul@example.com,9876543210,21,Computer Science,9.1,2026-08-07T22:48:06.249672
+STU001,neel,vyas,neel@gmail.com,7838928832,22,machine learning,9.3,2026-08-07T22:48:06.249672
+STU002,srikant,Oza,srikant@gmail.com,8932953532,21,Computer science,9.1,2026-08-30T10:08:38.672655+00:00
+STU003,,,ab@gmail.com,9032535364,21,,8.4,2026-08-30T10:24:59.775041+00:00
+STU004,dhaval,solanki,dhaval@gmail.com,7583892343,24,cs,9.1,2026-08-30T10:44:38.986566+00:00

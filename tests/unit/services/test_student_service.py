@@ -5,6 +5,7 @@ import pytest
 from student_management.domain.models.student import Student
 from student_management.exceptions.student import (
     DuplicateStudentError,
+    InvalidSearchFieldError,
     InvalidSortFieldError,
     StudentNotFoundError,
 )
@@ -585,3 +586,14 @@ def test_get_all_students_rejects_invalid_sort_field() -> None:
 
     with pytest.raises(InvalidSortFieldError):
         service.get_all_students(sort_by="salary")
+
+
+def test_search_students_rejects_invalid_field() -> None:
+    repository = FakeStudentRepository()
+    service = create_student_service(repository)
+
+    with pytest.raises(InvalidSearchFieldError):
+        service.search_students(
+            query="Rahul",
+            field="invalid",
+        )
