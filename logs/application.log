@@ -1,0 +1,14 @@
+2026-08-30 17:20:37,018 | INFO | __main__ | Application started.
+2026-08-30 17:21:35,484 | INFO | student_management.services.student_service | Student added successfully: STU005
+2026-08-30 17:23:37,180 | INFO | __main__ | Application started.
+2026-08-30 17:23:53,522 | INFO | __main__ | Application started.
+2026-08-30 17:24:39,479 | WARNING | student_management.services.student_service | Attempted to add duplicate student: STU005
+2026-08-30 19:04:36,928 | INFO | __main__ | Application started.
+2026-08-30 19:05:01,095 | INFO | student_management.cli.application | Application exited by user.
+2026-08-30 19:24:48,927 | INFO | __main__ | Application started.
+2026-08-30 19:26:09,778 | INFO | student_management.cli.student_cli | User requested student creation: STU007
+2026-08-30 19:26:09,779 | INFO | student_management.services.student_service | Student added successfully: STU007
+2026-08-30 19:26:43,745 | INFO | student_management.cli.student_cli | User requested student deletion: STU007
+2026-08-30 19:26:48,821 | INFO | student_management.services.student_service | Student deleted successfully: STU007
+2026-08-30 19:27:21,337 | WARNING | student_management.cli.application | Invalid menu option selected: cls
+2026-08-30 19:27:24,593 | INFO | student_management.cli.application | Application exited by user.
