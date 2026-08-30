@@ -1,3 +1,4 @@
+import logging
 from datetime import UTC, datetime
 
 from student_management.domain.models.student import Student
@@ -15,6 +16,8 @@ from student_management.exceptions.validation import (
 )
 from student_management.services.student_service import StudentService
 
+logger = logging.getLogger(__name__)
+
 
 class StudentCLI:
     """Handle student-related command-line interactions."""
@@ -25,6 +28,7 @@ class StudentCLI:
     def add_student(self) -> None:
         """Collect student information and add a new student."""
         student = self._create_student_from_input()
+        logger.info("User requested student creation: %s", student.student_id)
 
         try:
             self._service.add_student(student)
@@ -154,12 +158,22 @@ class StudentCLI:
         field = search_fields.get(choice)
 
         if field is None:
+            logger.warning(
+                "User selected invalid search option: %s",
+                choice,
+            )
             print("Error: Invalid search option.")
             return
 
         query = input("Enter search value: ").strip()
 
+        logger.info(
+            "User requested student search: field=%s",
+            field,
+        )
+
         if not query:
+            logger.warning("User entered an empty search value.")
             print("Error: Search value cannot be empty.")
             return
 
@@ -226,6 +240,10 @@ class StudentCLI:
         field = sort_fields.get(choice)
 
         if field is None:
+            logger.warning(
+                "User selected invalid sort option: %s",
+                choice,
+            )
             print("Error: Invalid sort option.")
             return
 
@@ -246,6 +264,11 @@ class StudentCLI:
     def update_student(self) -> None:
         """Update an existing student's information."""
         student_id = input("Enter Student ID to update: ").strip()
+
+        logger.info(
+            "User requested student update: %s",
+            student_id,
+        )
 
         try:
             existing_student = self._service.get_student(student_id)
@@ -367,6 +390,11 @@ class StudentCLI:
         """Delete a student after confirming the operation."""
         student_id = input("Enter Student ID to delete: ").strip()
 
+        logger.info(
+            "User requested student deletion: %s",
+            student_id,
+        )
+
         try:
             student = self._service.get_student(student_id)
         except StudentNotFoundError as error:
@@ -382,6 +410,10 @@ class StudentCLI:
         )
 
         if confirmation != "y":
+            logger.info(
+                "User cancelled student deletion: %s",
+                student_id,
+            )
             print("Deletion cancelled.")
             return
 

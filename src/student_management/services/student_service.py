@@ -1,3 +1,5 @@
+import logging
+
 from student_management.domain.models.student import Student
 from student_management.exceptions.student import (
     DuplicateStudentError,
@@ -7,6 +9,8 @@ from student_management.exceptions.student import (
 )
 from student_management.repositories.student_repository import StudentRepository
 from student_management.validators.student_validator import StudentValidator
+
+logger = logging.getLogger(__name__)
 
 
 class StudentService:
@@ -25,11 +29,22 @@ class StudentService:
         self._validator.validate(student)
 
         if self._repository.exists(student.student_id):
+            logger.warning(
+                "Attempted to add duplicate student: %s",
+                student.student_id,
+            )
+
             raise DuplicateStudentError(
                 f"Student ID already exists: {student.student_id}"
             )
 
         self._repository.save(student)
+
+        logger.info(
+            "Student added successfully: %s",
+            student.student_id,
+        )
+
         return student
 
     def update_student(self, student: Student) -> Student:
@@ -39,7 +54,17 @@ class StudentService:
         updated = self._repository.update(student)
 
         if not updated:
+            logger.warning(
+                "Attempted to update non-existent student: %s",
+                student.student_id,
+            )
+
             raise StudentNotFoundError(f"Student not found: {student.student_id}")
+
+        logger.info(
+            "Student updated successfully: %s",
+            student.student_id,
+        )
 
         return student
 
@@ -48,13 +73,28 @@ class StudentService:
         deleted = self._repository.delete(student_id)
 
         if not deleted:
+            logger.warning(
+                "Attempted to delete non-existent student: %s",
+                student_id,
+            )
+
             raise StudentNotFoundError(f"Student not found: {student_id}")
+
+        logger.info(
+            "Student deleted successfully: %s",
+            student_id,
+        )
 
     def get_student(self, student_id: str) -> Student:
         """Return a student by ID or raise StudentNotFoundError."""
         student = self._repository.get_by_id(student_id)
 
         if student is None:
+            logger.warning(
+                "Student lookup failed: %s",
+                student_id,
+            )
+
             raise StudentNotFoundError(f"Student with ID '{student_id}' was not found.")
 
         return student

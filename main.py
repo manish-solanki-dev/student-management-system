@@ -1,8 +1,10 @@
+import logging
 from pathlib import Path
 
 from student_management.cli.application import Application
 from student_management.cli.menu import Menu
 from student_management.cli.student_cli import StudentCLI
+from student_management.logging.logger import configure_logging
 from student_management.repositories.csv_student_repository import (
     CSVStudentRepository,
 )
@@ -14,9 +16,15 @@ from student_management.validators.phone_validator import PhoneValidator
 from student_management.validators.student_id_validator import StudentIDValidator
 from student_management.validators.student_validator import StudentValidator
 
+logger = logging.getLogger(__name__)
+
 
 def main() -> None:
     """Start the Student Management System."""
+    configure_logging()
+
+    logger.info("Application started.")
+
     repository = CSVStudentRepository(
         Path("data/students.csv"),
     )

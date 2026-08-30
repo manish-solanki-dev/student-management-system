@@ -1,5 +1,9 @@
+import logging
+
 from student_management.cli.menu import Menu
 from student_management.cli.student_cli import StudentCLI
+
+logger = logging.getLogger(__name__)
 
 
 class Application:
@@ -29,12 +33,14 @@ class Application:
             choice = self._menu.get_choice()
 
             if choice == "7":
+                logger.info("Application exited by user.")
                 print("Goodbye!")
                 break
 
             action = actions.get(choice)
 
             if action is None:
+                logger.warning("Invalid menu option selected: %s", choice)
                 print("Error: Invalid menu option.")
                 continue
 
